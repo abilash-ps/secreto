@@ -48,15 +48,29 @@ const upload = multer({
 });
 
 // Middleware
+const allowedOrigins = [
+  "https://secreto-pink.vercel.app",
+  "https://secreto-git-main-abilash-projects-a6f68d1d.vercel.app",
+  "https://secreto-2la8semor-abilash-projects-a6f68d1d.vercel.app",
+  "http://localhost:5173",
+  "http://localhost:3000",
+];
+
 app.use(
   cors({
-    origin:
-      process.env.NODE_ENV === "production"
-        ? ["https://secreto-pink.vercel.app"]
-        : ["http://localhost:5173", "http://localhost:3000"],
+    origin: function (origin, callback) {
+      if (!origin) return callback(null, true);
+
+      if (allowedOrigins.includes(origin)) {
+        return callback(null, true);
+      }
+
+      return callback(new Error("Not allowed by CORS: " + origin));
+    },
     credentials: true,
   })
 );
+
 app.use(express.json({ limit: "10mb" }));
 
 // Auth middleware
